@@ -1,36 +1,35 @@
 import {combineReducers} from 'redux';
-// import actions from '../actions';
-import {SET_VISIBILITY_FILTER, ADD_TODO, COMPLETE_TODO } from '../actionType';
+import todos from './todos';
+import visibilityFilter from './visibility-filter';
+import { ADD_TODO, COMPLETE_TODO, Toggle_ToDo, SET_VISIBILITY_FILTER} from '../actionType';
 
-const visibilityFilter = (state = 'SHOW_ALL', action) => {
-    switch(action.type) {
-        case SET_VISIBILITY_FILTER: 
-            return action.filter;
-        default: 
-            return  state;
-    }
+const initState = {
+    filter: 'SHOW_ALL',
+    todos: []
 };
 
-const todos = (state = [], action) => {
-    switch(action.type) {
+// 拆分reducer
+// 最基础的reduce合成
+const todoApp = (state = initState, action) => {
+    switch (action.type) {
+        case SET_VISIBILITY_FILTER:
+            return Object.assign({}, state, {
+                filter: visibilityFilter(state.filter, action)
+            });   
         case ADD_TODO:
-            return [...state, {
-                text: action.text,
-                complate: false
-            }];
         case COMPLETE_TODO:
-            return  state.map((item, index) => {
-                if(index === action.index) {
-                    // item.complate = true;
-                    return Object.assign({}, item, {complate: true});
-                } else {
-                    return state;
-                }
-            });
-        default:
-            return state;   
+        case Toggle_ToDo:
+            return {...state, ...{todos: todos(state.todos, action)}};   
     }
+}
+
+const toDoApp = (state = {}, action) => {
+    return {
+        visibilityFilter: visibilityFilter(state.filter, action),
+        todos: todos(state.todos, action)
+    };
 };
 
+// 通过combineReducers()工具来合成reducer,与以上的合成方法完全等价
 const reducer = combineReducers({visibilityFilter, todos});
 export default reducer;
