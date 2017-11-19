@@ -1,5 +1,4 @@
 import { ADD_TODO, COMPLETE_TODO, Toggle_ToDo } from '../actionType';
-
 const todos = (state = [], action) => {
     switch(action.type) {
         case ADD_TODO:
@@ -14,12 +13,12 @@ const todos = (state = [], action) => {
                     // item.complete = true;
                     return Object.assign({}, item, {complete: true});
                 } else {
-                    return state;
+                    return item;
                 }
             });
         case Toggle_ToDo:
             return state.map((item, index) => {
-                if (item.index === index) {
+                if (index === action.index) {
                     return {...item, ...{complete: !item.complete}};
                 }
                 return item;
